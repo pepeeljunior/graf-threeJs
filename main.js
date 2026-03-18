@@ -1,26 +1,67 @@
 import * as THREE from 'https://unpkg.com/three@0.154.0/build/three.module.js';
+
+// Escena, cámara y render
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+scene.background = new THREE.Color(0x222222);
 
-const renderer = new THREE.WebGLRenderer();
-renderer.setSize( window.innerWidth, window.innerHeight );
-renderer.setAnimationLoop( animate );
-document.body.appendChild( renderer.domElement );
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
-const geometry = new THREE.BoxGeometry( 1, 1, 1 );
-const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-const cube = new THREE.Mesh( geometry, material );
-scene.add( cube );
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
 
-//Agregar una luz direccional y ajustar posicion 
+// Geometría
+const geometry = new THREE.DodecahedronGeometry(1);
 
-camera.position.z = 5;
+// 🟢 Verde (velocidad normal)
+const shape1 = new THREE.Mesh(
+    geometry,
+    new THREE.MeshStandardMaterial({ color: 0x00ff00 })
+);
+shape1.position.x = -2;
+scene.add(shape1);
 
-function animate( time ) {
+// 🔵 Azul (más rápido)
+const shape2 = new THREE.Mesh(
+    geometry,
+    new THREE.MeshStandardMaterial({ color: 0x0000ff })
+);
+scene.add(shape2);
 
-  cube.rotation.x = time / 2000;
-  cube.rotation.y = time / 1000;
+// 🔴 Rojo (mucho más rápido)
+const shape3 = new THREE.Mesh(
+    geometry,
+    new THREE.MeshStandardMaterial({ color: 0xff0000 })
+);
+shape3.position.x = 2;
+scene.add(shape3);
 
-  renderer.render( scene, camera );
+// Luces
+const light = new THREE.DirectionalLight(0xffffff, 1.5);
+light.position.set(5, 5, 5);
+scene.add(light);
 
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+scene.add(ambientLight);
+
+// Cámara
+camera.position.z = 6;
+
+// 🎬 Animación con diferentes velocidades
+function animate() {
+    // 🟢 normal
+    shape1.rotation.x += 0.01;
+    shape1.rotation.y += 0.01;
+
+    // 🔵 más rápido
+    shape2.rotation.x += 0.03;
+    shape2.rotation.y += 0.03;
+
+    // 🔴 MUCHO más rápido
+    shape3.rotation.x += 0.06;
+    shape3.rotation.y += 0.06;
+
+    renderer.render(scene, camera);
 }
+
+renderer.setAnimationLoop(animate);
